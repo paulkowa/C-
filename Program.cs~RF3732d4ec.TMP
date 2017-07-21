@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Classes;
+
+namespace ConsoleApplication1
+
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Associate a = new Associate(10, "Sam", 5.5);
+           
+        }
+    }
+}
