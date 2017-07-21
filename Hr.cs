@@ -13,9 +13,9 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
 
-            Associate a1 = new Associate(123, "Joel", 5.5);
-            Associate a2 = new Associate(234, "Vince", 5.5);
-            Associate a3 = new Associate(456, "Patrick", 5.5);
+            NonExemptAssociate a1 = new NonExemptAssociate(123, "Joel", 5.5);
+            NonExemptAssociate a2 = new NonExemptAssociate(234, "Vince", 5.5);
+            NonExemptAssociate a3 = new NonExemptAssociate(456, "Patrick", 5.5);
             Manager m = new Manager(4892, "Ben", 10.5);
             Department d = new Department("IT", m);
 

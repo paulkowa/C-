@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Classes
 {
-    public class Associate
+    public abstract class Associate
     {
         public int associateNum { get; private set; }
         public string name { get; set; }
@@ -19,11 +19,7 @@ namespace Classes
             this.pay = pay;
         }
 
-        public virtual double computeWeeklyPay(double hours)
-        {
-            if (hours <= 40) { return hours * pay; }
-            return (40 * pay) + ((hours - 40) * 1.5 * pay);
-        }
+        public abstract double computeWeeklyPay(double hours);
 
         public void raisePay(double pay)
         {

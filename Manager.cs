@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 
 namespace Classes
 {
-    class Manager : Associate
+    class Manager : ExemptAssociate
     {
         private List<Associate> associates;
 
         public Manager(int associateNum, string name, double pay) : base(associateNum, name, pay)
         {
             associates = new List<Associate>();
-        }
-
-        public double computeWeeklyPay()
-        {
-            return 38.75 * pay;
         }
 
         public bool addAssociate(Associate a)
