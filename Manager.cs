@@ -28,14 +28,13 @@ namespace Classes
                 return true;
             }
 
-            else { return false; }
+            return false;
 
         }
 
         public void hire(Associate a)
         {
             if (addAssociate(a)) { return; }
-            Console.WriteLine("Unable to add associate.");
         }
 
         public void giveRaise(Associate a, double raise)
