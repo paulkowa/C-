@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+namespace MsLib
+{
+    public class MineButton : Button
+    {
+        //public event RoutedEventHandler RightClick;
+        //public event RoutedEventHandler LeftClick;
+        Tile tile;
+        Image flag;
+        Image mine;
+
+        public MineButton(Tile tile)
+        {
+            this.tile = tile;
+            //Set flag
+            flag = new Image();
+            flag.Source = new BitmapImage(new Uri("http://home.avvanta.com/~sydde/flagIcon.png"));
+            flag.VerticalAlignment = VerticalAlignment.Center;
+            //Set Mine
+            mine = new Image();
+            mine.Source = new BitmapImage(new Uri("http://a1.mzstatic.com/us/r30/Purple/v4/fa/52/df/fa52df94-5488-2d68-6493-376eece87b0b/icon.png"));
+            mine.VerticalAlignment = VerticalAlignment.Center;
+
+        }
+
+        //Right Click
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonDown(e);
+
+            //Set flags
+            if (tile.isFlagged)
+            {
+                Content = null;
+                tile.isFlagged = false;
+            }
+
+            else
+            {
+                Content = flag;
+                tile.isFlagged = true;
+            }
+
+        }
+        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseRightButtonUp(e);
+        }
+
+        //Left Click
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            if (tile.isFlagged) { return; }
+            else
+            {
+                if (tile.isMine)
+                {
+                    this.Content = mine;
+                    this.IsEnabled = false;
+                }
+
+                else
+                {
+                    this.Background = Brushes.Gray;
+
+                }
+            }
+        }
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonUp(e);
+        }
+    }
+}

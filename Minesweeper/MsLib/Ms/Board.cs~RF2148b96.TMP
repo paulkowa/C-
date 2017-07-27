@@ -15,12 +15,12 @@ namespace MsLib
             board = new List<Tile>(576);
             fillBoard();
             generateMines();
-            mineCount();
+            //mineCount();
         }
 
         private void fillBoard()
         {
-            for (int i = 0; i < board.Capacity; i++) { board.Add(new Tile()); }
+            for (int i = 0; i < board.Capacity; i++) { board.Add(new MsLib.Tile()); }
         }
 
         private void generateMines()
@@ -63,7 +63,7 @@ namespace MsLib
                 }
                 else
                 {
-                    if (i % 24 == 23) { board[i].nearbyMines = board[i + 24].toInt() + board[i + 23].toInt() + board[i - 1].toInt() + board[i - 25].toInt() + board[i - 24].toInt(); }
+                    if (i % 23 == 0) { board[i].nearbyMines = board[i + 24].toInt() + board[i + 23].toInt() + board[i - 1].toInt() + board[i - 25].toInt() + board[i - 24].toInt(); }
                     else if (i % 24 == 0) { board[i].nearbyMines = board[i + 1].toInt() + board[i + 25].toInt() + board[i + 24].toInt() + board[i - 24].toInt() + board[i - 23].toInt(); }
                     else if (i < 23) { board[i].nearbyMines = board[i + 1].toInt() + board[i + 25].toInt() + board[i + 24].toInt() + board[i + 23].toInt() + board[i - 1].toInt(); }
                     else if (i > 552) { board[i].nearbyMines = board[i + 1].toInt() + board[i - 1].toInt() + board[i - 25].toInt() + board[i - 24].toInt() + board[i - 23].toInt(); }

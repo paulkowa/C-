@@ -20,7 +20,7 @@ namespace MsLib
 
         private void fillBoard()
         {
-            for (int i = 0; i < board.Capacity; i++) { board.Add(new Tile()); }
+            for (int i = 0; i < board.Capacity; i++) { board.Add(new MsLib.Tile()); }
         }
 
         private void generateMines()
