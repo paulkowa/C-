@@ -56,6 +56,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Worker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MineButton.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Tile.cs" />
