@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 
 namespace Exercise1
 {
-    //Enter 10 numbers
-    //Store in array
-    //Get one additional number from user
-    //Check array for that number already existing
-    //display message if / not that number exists
-    class BookProblem1
+    /// <summary>
+    /// mod first program to display how many times that number eixsts
+    /// </summary>
+    class BookProblem2
     {
         List<int> numbers;
         const int count = 10;
-        public BookProblem1()
+        public BookProblem2()
         {
             numbers = new List<int>();
         }
@@ -28,15 +26,17 @@ namespace Exercise1
         private void getInput()
         {
             int input = 0;
-            while (numbers.Count < 10) {
+            while (numbers.Count < 10)
+            {
                 Console.WriteLine("Please enter a whole number:");
                 try { input = Convert.ToInt32(Console.ReadLine()); }
-                catch {
+                catch
+                {
                     Console.WriteLine("Invalid entry. Please try again.");
                     continue;
                 }
-                numbers.Add(input);               
-                }
+                numbers.Add(input);
+            }
         }
         private void harassUser()
         {
@@ -49,9 +49,13 @@ namespace Exercise1
                 harassUser();
                 return;
             }
-            if (numbers.Contains(input)) { Console.WriteLine("The number " + input + " exists."); }
+            if (numbers.Contains(input)) {
+                int c = 0;
+                for (int i = 0; i < numbers.Count; i++) { if(numbers[i] == input) { c++; } }
+                Console.WriteLine("The number " + input + " exists " + c + " times."); }
             else { Console.WriteLine("The number " + input + " does not exist."); }
         }
     }
+
 }
 
