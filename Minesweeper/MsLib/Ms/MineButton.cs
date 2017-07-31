@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,45 +14,47 @@ namespace MsLib
 {
     public class MineButton : Button
     {
-        private Tile tile;
+        public Tile tile { get; private set; }
+        public int index { get; private set; }
         private Image flag, mine;
-        private List<MineButton> buttons;
-        int index;
+        private Game game;
 
-        public MineButton(Tile tile, List<MineButton> buttons, int index)
+        public MineButton(Tile tile, Game game, int index)
         {
-            //initalize globals
+            // Initalize values
             this.tile = tile;
             this.index = index;
-            this.buttons = buttons;
+            this.game = game;
 
-            //Set flag
+            // Set flag image
             flag = new Image();
             flag.Source = new BitmapImage(new Uri(@"/Resources/flagIcon.png", UriKind.RelativeOrAbsolute));
             flag.VerticalAlignment = VerticalAlignment.Center;
-            //Set Mine
+            // Set Mine image
             mine = new Image();
             mine.Source = new BitmapImage(new Uri(@"/Resources/mine.png", UriKind.RelativeOrAbsolute));
             mine.VerticalAlignment = VerticalAlignment.Center;
-
+            // Set button default background color
             Background = Brushes.LightGray;
         }
-        //Right Click
+        // Right Click
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonDown(e);
-            //Set flags
+            // Remove flag
             if (tile.isFlagged)
             {
                 Content = null;
+                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) + 1);
                 tile.isFlagged = false;
             }
-
+            // Ignore if tile is already activated
             else if (tile.isActive) { return; }
-
+            // Set flag
             else
             {
                 Content = flag;
+                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) - 1);
                 tile.isFlagged = true;
             }
         }
@@ -59,32 +62,11 @@ namespace MsLib
         {
             base.OnMouseRightButtonUp(e);
         }
-        //Left Click
+        // Left Click
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            if (tile.isFlagged) { return; }
-            else
-            {
-                if (tile.isMine)
-                {
-                    this.Content = mine;
-                    this.Background = Brushes.White;
-                    tile.isActive = true;
-                }
-
-                else if (tile.isActive == false)
-                {
-                    TextBlock t = new TextBlock();
-                    if (tile.nearbyMines > 0) { t.Text = Convert.ToString(tile.nearbyMines); }
-                    else { checkNeighbors(this); }
-                    setText(t, this.tile);
-                    this.Content = t;
-                    this.Background = Brushes.White;
-                    tile.isActive = true;
-                }
-                else { return; }
-            }
+            setTile(this);
         }
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
@@ -94,9 +76,38 @@ namespace MsLib
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
             base.OnMouseDoubleClick(e);
-            if(tile.isActive == true) { checkNeighbors(this); }
         }
 
+        // Set the button to display the proper number or mine
+        private void setTile(MineButton button)
+        {
+            if (button.tile.isFlagged) { return; }
+            else if(button.tile.isMine)
+            {
+                button.Content = mine;
+                button.Background = Brushes.White;
+                button.tile.isActive = true;
+            }
+            else
+            {
+                if (button.tile.nearbyMines > 0)
+                {
+                    TextBlock t = new TextBlock();
+                    t.Text = Convert.ToString(button.tile.nearbyMines);
+                    setText(t, button.tile);
+                    button.Content = t;
+                    button.Background = Brushes.White;
+                    button.tile.isActive = true;
+                }
+                else
+                {
+                    button.Background = Brushes.White;
+                    button.tile.isActive = true;
+                }
+            }
+        }
+
+        // Set the color of the text within the button to match the number of mines surrounding it
         private void setText(TextBlock t, Tile tile)
         {
             t.FontWeight = FontWeights.Bold;
@@ -132,115 +143,6 @@ namespace MsLib
                 case 8:
                     t.Foreground = Brushes.Orange;
                     break;
-            }
-        }
-        private void checkNeighbors(MineButton mine)
-        {
-            Queue<MineButton> neigh = new Queue<MineButton>();
-            if (index == 0 || index == 23 || index == 552 || index == 575)
-            {
-                switch (index)
-                {
-                    case 0:
-                        neigh.Enqueue(buttons[index + 1]);
-                        neigh.Enqueue(buttons[index + 25]);
-                        neigh.Enqueue(buttons[index + 24]);
-                        break;
-                    case 23:
-                        neigh.Enqueue(buttons[index - 1]);
-                        neigh.Enqueue(buttons[index + 23]);
-                        neigh.Enqueue(buttons[index + 24]);
-                        break;
-                    case 552:
-                        neigh.Enqueue(buttons[index + 1]);
-                        neigh.Enqueue(buttons[index - 23]);
-                        neigh.Enqueue(buttons[index - 24]);
-                        break;
-                    case 575:
-                        neigh.Enqueue(buttons[index - 1]);
-                        neigh.Enqueue(buttons[index - 25]);
-                        neigh.Enqueue(buttons[index - 24]);
-                        break;
-                }
-            }
-            else if (index % 24 == 0)
-            {
-                neigh.Enqueue(buttons[index + 1]);
-                neigh.Enqueue(buttons[index + 25]);
-                neigh.Enqueue(buttons[index + 24]);
-                neigh.Enqueue(buttons[index - 24]);
-                neigh.Enqueue(buttons[index - 23]);
-            }
-            else if (index % 24 == 23)
-            {
-                neigh.Enqueue(buttons[index + 24]);
-                neigh.Enqueue(buttons[index + 23]);
-                neigh.Enqueue(buttons[index - 1]);
-                neigh.Enqueue(buttons[index - 25]);
-                neigh.Enqueue(buttons[index - 24]);
-            }
-            else if (index < 23)
-            {
-                neigh.Enqueue(buttons[index + 1]);
-                neigh.Enqueue(buttons[index + 25]);
-                neigh.Enqueue(buttons[index + 24]);
-                neigh.Enqueue(buttons[index + 23]);
-                neigh.Enqueue(buttons[index - 1]);
-            }
-            else if (index > 552)
-            {
-                neigh.Enqueue(buttons[index + 1]);
-                neigh.Enqueue(buttons[index - 1]);
-                neigh.Enqueue(buttons[index - 25]);
-                neigh.Enqueue(buttons[index - 24]);
-                neigh.Enqueue(buttons[index - 23]);
-            }
-            else
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    neigh.Enqueue(buttons[index + 1]);
-                    neigh.Enqueue(buttons[index + 25]);
-                    neigh.Enqueue(buttons[index + 24]);
-                    neigh.Enqueue(buttons[index + 23]);
-                    neigh.Enqueue(buttons[index - 1]);
-                    neigh.Enqueue(buttons[index - 25]);
-                    neigh.Enqueue(buttons[index - 24]);
-                    neigh.Enqueue(buttons[index - 23]);
-                }
-            }
-            checkQueue(ref neigh);
-        }
-
-        private void checkQueue(ref Queue<MineButton> queue)
-        {
-            while (queue.Count > 0)
-            {
-                MineButton mb = queue.Dequeue();
-                setTile(mb);
-                //if (mb.tile.nearbyMines == 0) { checkNeighbors(mb); }
-            }
-        }
-
-        private void setTile(MineButton button)
-        {
-            if (button.tile.isFlagged || button.tile.isMine) { return; }
-            else
-            {
-                if(button.tile.nearbyMines > 0)
-                {
-                    TextBlock t = new TextBlock();
-                    t.Text = Convert.ToString(button.tile.nearbyMines);
-                    setText(t, button.tile);
-                    button.Content = t;
-                    button.Background = Brushes.White;
-                    button.tile.isActive = true;
-                }
-                else
-                {
-                    button.Background = Brushes.White;
-                    button.tile.isActive = true;
-                }
             }
         }
     }

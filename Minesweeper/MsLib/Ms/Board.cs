@@ -8,29 +8,34 @@ namespace MsLib
 {
     public class Board
     {
-        public List<Tile> board;
-
-        public Board()
+        private int size;
+        public double mineTotal { get; private set; }
+        public List<Tile> board { get; private set; }
+        public Board(int size)
         {
-            board = new List<Tile>(576);
-            fillBoard();
-            generateMines();
-            mineCount();
+            // Initialize values
+            this.size = size;
+            board = new List<Tile>();
+            // Fill board, assign mines, and assign tile mine count
+            fillBoard(board, this.size);
+            generateMines(board, size);
+            mineCount(board, size);
+        }
+        // Fill the board array with the correct number of tiles
+        private void fillBoard(List<Tile> board, int size)
+        {
+            for (int i = 0; i < size; i++) { board.Add(new Tile(i)); }
         }
 
-        private void fillBoard()
-        {
-            for (int i = 0; i < board.Capacity; i++) { board.Add(new Tile()); }
-        }
-
-        private void generateMines()
+        // Assign tiles as mines at random
+        private void generateMines(List<Tile> board, int size)
         {
             Random rand = new Random();
-            int mines = 99;
-
+            double mines = Math.Round(size * 0.2);
+            mineTotal = mines;
             while (mines > 0)
             {
-                int i = rand.Next(0, 575);
+                int i = rand.Next(0, size - 1);
                 if (board[i].isMine == false)
                 {
                     board[i].isMine = true;
@@ -39,7 +44,8 @@ namespace MsLib
             }
         }
 
-        private void mineCount()
+        // Assign tiles with their correct nearby mine values
+        private void mineCount(List<Tile> board, int size)
         {
             for (int i = 0; i < board.Count; i++)
             {

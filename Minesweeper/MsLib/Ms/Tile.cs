@@ -12,19 +12,14 @@ namespace MsLib
         public bool isMine { get; set; }
         public bool isFlagged { get; set; }
         public int nearbyMines { get; set; }
+        public int index { get; private set; }
 
-        public Tile()
+        public Tile(int index)
         {
             isActive = false;
             isMine = false;
             isFlagged = false;
-        }
-
-        public Tile(bool isMine)
-        {
-            this.isActive = false;
-            this.isMine = isMine;
-            this.isFlagged = false;
+            this.index = index;
         }
 
         public int toInt()
