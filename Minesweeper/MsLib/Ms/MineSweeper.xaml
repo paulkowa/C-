@@ -22,14 +22,13 @@
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
             <TextBlock Name="Timer" Grid.Column="1" FontSize="24" Background="Black" Foreground="Red" TextAlignment="Center">
-                0:00
+                0
             </TextBlock>
             <Button Name="GameControl" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40" Background="LightGray" BorderBrush="Gray">
                 <Image Source="/Resources/smile.png">
                 </Image>
             </Button>
             <TextBlock Name="MineCounter" Grid.Column="5" FontSize="24" Background="Black" Foreground="Red" TextAlignment="Center">
-                000
             </TextBlock>
         </Grid>
         <Grid>
