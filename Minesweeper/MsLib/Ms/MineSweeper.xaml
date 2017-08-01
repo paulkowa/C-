@@ -11,24 +11,21 @@
         WindowStartupLocation="CenterScreen"
         Background="Gray">
     <DockPanel Name="mainDock">
-        <Grid DockPanel.Dock="Top" Width="630" HorizontalAlignment="Center">
+        <Grid Name="TopGrid" DockPanel.Dock="Top" Width="630" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="75" />
+                <ColumnDefinition Name="Left" Width="75" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="40" />
+                <ColumnDefinition Name="Center" Width="40" />
                 <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="75" />
+                <ColumnDefinition Name="Right" Width="75" />
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
             <TextBlock Name="Timer" Grid.Column="1" FontSize="24" Background="Black" Foreground="Red" TextAlignment="Center">
                 0
             </TextBlock>
-            <Button Name="GameControl" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="40" Background="LightGray" BorderBrush="Gray">
-                <Image Source="/Resources/smile.png">
-                </Image>
-            </Button>
             <TextBlock Name="MineCounter" Grid.Column="5" FontSize="24" Background="Black" Foreground="Red" TextAlignment="Center">
+                0
             </TextBlock>
         </Grid>
         <Grid>

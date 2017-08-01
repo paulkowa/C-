@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MsLib
+namespace Ms
 {
     public class Board
     {
@@ -21,21 +22,29 @@ namespace MsLib
             generateMines(board, size);
             mineCount(board, size);
         }
-        // Fill the board array with the correct number of tiles
+        /// <summary>
+        /// Fill the board array with the correct number of tiles
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="size"></param>
         private void fillBoard(List<Tile> board, int size)
         {
             for (int i = 0; i < size; i++) { board.Add(new Tile(i)); }
         }
 
-        // Assign tiles as mines at random
+        /// <summary>
+        /// Assign tiles as mines at random
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="size"></param>
         private void generateMines(List<Tile> board, int size)
         {
             Random rand = new Random();
-            double mines = Math.Round(size * 0.2);
+            double mines = Math.Round(size * 0.20);
             mineTotal = mines;
             while (mines > 0)
             {
-                int i = rand.Next(0, size - 1);
+                int i = rand.Next(1, size - 1);
                 if (board[i].isMine == false)
                 {
                     board[i].isMine = true;
@@ -44,7 +53,46 @@ namespace MsLib
             }
         }
 
-        // Assign tiles with their correct nearby mine values
+        /// <summary>
+        /// Swap the location of a mine with another tile
+        /// </summary>
+        /// <param name="t"></param>
+        public void moveMine(Tile t)
+        {
+            board[t.index].isMine = false;
+            board[0].isMine = true;
+            refreshMineCounts();
+        }
+
+        /// <summary>
+        /// Refresh the counts for nearbyMines for every tile on the board
+        /// </summary>
+        private void refreshMineCounts()
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = false;
+            //worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+            worker.DoWork += (sender, e) =>
+            {
+                mineCount(board, size);
+            };
+            worker.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Run upon CheckTiles worker completion to update GUI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        //private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        //{
+            
+        //}
+        /// <summary>
+        /// Assign tiles with their correct nearby mine values
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="size"></param>
         private void mineCount(List<Tile> board, int size)
         {
             for (int i = 0; i < board.Count; i++)

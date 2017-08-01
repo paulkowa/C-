@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MsLib
+namespace Ms
 {
     public class Tile
     {
@@ -22,6 +22,10 @@ namespace MsLib
             this.index = index;
         }
 
+        /// <summary>
+        /// Convert tile to an integer value
+        /// </summary>
+        /// <returns>1 if the tile is a mine, 0 otherwise</returns>
         public int toInt()
         {
             if(isMine) { return 1; }

@@ -10,12 +10,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace MsLib
+namespace Ms
 {
     public class MineButton : Button
     {
         public Tile tile { get; private set; }
-        public int index { get; private set; }
         private Image flag, mine;
         private Game game;
 
@@ -23,21 +22,24 @@ namespace MsLib
         {
             // Initalize values
             this.tile = tile;
-            this.index = index;
             this.game = game;
-
             // Set flag image
             flag = new Image();
             flag.Source = new BitmapImage(new Uri(@"/Resources/flagIcon.png", UriKind.RelativeOrAbsolute));
             flag.VerticalAlignment = VerticalAlignment.Center;
+            flag.HorizontalAlignment = HorizontalAlignment.Center;
             // Set Mine image
             mine = new Image();
             mine.Source = new BitmapImage(new Uri(@"/Resources/mine.png", UriKind.RelativeOrAbsolute));
             mine.VerticalAlignment = VerticalAlignment.Center;
+            flag.HorizontalAlignment = HorizontalAlignment.Center;
             // Set button default background color
             Background = Brushes.LightGray;
         }
-        // Right Click
+        /// <summary>
+        /// Right Click event handler
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonDown(e);
@@ -45,6 +47,7 @@ namespace MsLib
             if (tile.isFlagged)
             {
                 Content = null;
+                Background = Brushes.LightGray;
                 game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) + 1);
                 tile.isFlagged = false;
             }
@@ -54,6 +57,7 @@ namespace MsLib
             else
             {
                 Content = flag;
+                Background = Brushes.Blue;
                 game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) - 1);
                 tile.isFlagged = true;
             }
@@ -62,11 +66,21 @@ namespace MsLib
         {
             base.OnMouseRightButtonUp(e);
         }
-        // Left Click
+        /// <summary>
+        /// Left Click event handler
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            setTile(this);
+            if (game.firstClick)
+            {
+                if (tile.isMine) { game.board.moveMine(tile); }
+                game.startTimer();
+            }
+            if (tile.isActive || tile.isFlagged) { return; }
+            else if (tile.nearbyMines == 0 && tile.isMine == false) { game.checkTiles(tile, false); }
+            else { setTile();}
         }
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
@@ -76,38 +90,46 @@ namespace MsLib
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
             base.OnMouseDoubleClick(e);
+            if (e.ChangedButton == MouseButton.Left && tile.isActive) { game.checkTiles(tile, true); }
         }
 
-        // Set the button to display the proper number or mine
-        private void setTile(MineButton button)
+        /// <summary>
+        /// Set the button to display the proper number or mine
+        /// </summary>
+        public void setTile()
         {
-            if (button.tile.isFlagged) { return; }
-            else if(button.tile.isMine)
+            if (tile.isFlagged) { return; }
+            else if(tile.isMine)
             {
-                button.Content = mine;
-                button.Background = Brushes.White;
-                button.tile.isActive = true;
+                Content = mine;
+                Background = Brushes.Red;
+                tile.isActive = true;
+                game.stopTimer();
             }
             else
             {
-                if (button.tile.nearbyMines > 0)
+                if (tile.nearbyMines > 0)
                 {
                     TextBlock t = new TextBlock();
-                    t.Text = Convert.ToString(button.tile.nearbyMines);
-                    setText(t, button.tile);
-                    button.Content = t;
-                    button.Background = Brushes.White;
-                    button.tile.isActive = true;
+                    t.Text = Convert.ToString(tile.nearbyMines);
+                    setText(t, tile);
+                    Content = t;
+                    Background = Brushes.White;
+                    tile.isActive = true;
                 }
                 else
                 {
-                    button.Background = Brushes.White;
-                    button.tile.isActive = true;
+                    Background = Brushes.White;
+                    tile.isActive = true;
                 }
             }
         }
 
-        // Set the color of the text within the button to match the number of mines surrounding it
+        /// <summary>
+        /// Set the color of the text within the button to match the number of mines surrounding it
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="tile"></param>
         private void setText(TextBlock t, Tile tile)
         {
             t.FontWeight = FontWeights.Bold;
