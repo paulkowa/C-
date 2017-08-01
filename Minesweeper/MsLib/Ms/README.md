@@ -1,0 +1,16 @@
+Need to be implemented
+-Solo mine tiles need to be set to non zero value so they do not trigger the cascade effect
+-new game needs to be done in a backgroundworker
+-new game button needs to be implemented
+-stop timer upon game ending
+-creating game won condition
+-create game lost condition
+-restructure code for visability
+-move thread creation for timer / new game / cascade effects into new classes
+-implement difficulty options
+-dynamically create board and mine amount based on difficultly
+-create a logfile for record times
+-Create a more solvable way of generating mine locations on the board to minimize guessing
+-Sound effect for clicking mine
+-Sound effect for game won
+-Sound effect for placing flag
