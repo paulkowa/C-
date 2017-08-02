@@ -56,12 +56,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Worker.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="MineButton.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="NewGameButton.cs" />
     <Compile Include="Tile.cs" />
+    <Compile Include="Timer.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Page Include="MineSweeper.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

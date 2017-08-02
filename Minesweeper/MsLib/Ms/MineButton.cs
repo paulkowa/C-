@@ -35,6 +35,19 @@ namespace Ms
             flag.HorizontalAlignment = HorizontalAlignment.Center;
             // Set button default background color
             Background = Brushes.LightGray;
+
+
+            // TEMPORARY FOR TESTING DELETE
+            // TEMPORARY FOR TESTING DELETE
+            // TEMPORARY FOR TESTING DELETE
+            //if(tile.isMine)
+            //{
+            //    Content = mine;
+            //}
+            // TEMPORARY FOR TESTING DELETE
+            // TEMPORARY FOR TESTING DELETE
+            // TEMPORARY FOR TESTING DELETE
+
         }
         /// <summary>
         /// Right Click event handler
@@ -46,10 +59,7 @@ namespace Ms
             setFlag();
             
         }
-        protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseRightButtonUp(e);
-        }
+
         /// <summary>
         /// Left Click event handler
         /// </summary>
@@ -57,26 +67,39 @@ namespace Ms
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            if (game.firstClick)
+            if (tile.isActive || tile.isFlagged) { return; }
+            else if (game.firstClick)
             {
                 if (tile.isMine) { game.board.moveMine(tile); }
                 game.startTimer();
+
+                // TEMPORARY FOR TESTING DELETE
+                // TEMPORARY FOR TESTING DELETE
+                //game.checkTiles(game.board.board[0], true);
+                // TEMPORARY FOR TESTING DELETE
+                // TEMPORARY FOR TESTING DELETE
             }
-            if (tile.isActive || tile.isFlagged) { return; }
-            else if (tile.nearbyMines == 0 && tile.isMine == false) { game.checkTiles(tile, false); }
-            else { setTile();}
-        }
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonUp(e);
+
+            if (tile.nearbyMines == 0 && tile.isMine == false) { game.checkTiles(tile); }
+            else if(tile.isMine) {
+                setTile();
+                game.gameLost(); }
+            else { setTile(); }
         }
 
+        /// <summary>
+        /// Double click event handler
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
             base.OnMouseDoubleClick(e);
-            if (e.ChangedButton == MouseButton.Left && tile.isActive) { game.checkTiles(tile, true); }
+            if (e.ChangedButton == MouseButton.Left && tile.isActive && !tile.isMine) { game.checkTiles(tile); }
         }
-
+        
+        /// <summary>
+        /// Set or remove flag
+        /// </summary>
         public void setFlag()
         {
             if (tile.isFlagged)
@@ -102,13 +125,12 @@ namespace Ms
         /// </summary>
         public void setTile()
         {
-            if (tile.isFlagged) { return; }
+            if (tile.isFlagged || tile.isActive) { return; }
             else if(tile.isMine)
             {
                 Content = mine;
                 Background = Brushes.Red;
                 tile.isActive = true;
-                game.stopTimer();
             }
             else
             {
@@ -123,6 +145,7 @@ namespace Ms
                 }
                 else
                 {
+                    Content = null;
                     Background = Brushes.White;
                     tile.isActive = true;
                 }

@@ -20,6 +20,7 @@ namespace Ms
         private List<MineButton> mineButtons;
         public MainWindow window { get; private set; }
         public Board board { get; private set; }
+        public NewGameButton newGameButton { get; private set; }
         public bool firstClick, gameActive;
         private Queue<Tile> update;
         private const int size = 576;
@@ -49,6 +50,42 @@ namespace Ms
         }
 
         /// <summary>
+        /// Ends the game for the user
+        /// Reveals all the tiles on the board
+        /// </summary>
+        public void gameLost()
+        {
+            newGameButton.gameLost();
+            newGameButton.IsEnabled = false;
+            BackgroundWorker disableTiles = new BackgroundWorker();
+            disableTiles.WorkerReportsProgress = false;
+            disableTiles.DoWork += (sender, e) =>
+            {
+                for (int i = 0; i < mineButtons.Count; i++)
+                {
+                    if (mineButtons[i].tile.isMine == false) { mineButtons[i].tile.isActive = true; }
+                }
+            };
+            disableTiles.RunWorkerAsync();
+            stopTimer();
+            revealBoard();
+        }
+
+        public void gameWon()
+        {
+
+        }
+
+        /// <summary>
+        /// Add a newGameButton to the GUI
+        /// </summary>
+        private void createNewGameButton(Game game)
+        {
+            newGameButton = new NewGameButton(game);
+            window.TopGrid.Children.Add(newGameButton);
+            Grid.SetColumn(newGameButton, 3);
+        }
+        /// <summary>
         /// Creates an async thread to track the time and update the GUI
         /// </summary>
         public void startTimer()
@@ -61,7 +98,7 @@ namespace Ms
         /// <summary>
         /// Cancel the time async thread
         /// </summary>
-        public void stopTimer()
+        private void stopTimer()
         {
             if (gameActive)
             {
@@ -133,51 +170,63 @@ namespace Ms
         }
 
         /// <summary>
-        /// Add a newGameButton to the GUI
+        /// Reveals all the tiles in the board
         /// </summary>
-        private void createNewGameButton(Game game)
+        private void revealBoard()
         {
-            NewGameButton newGameButton = new NewGameButton(game);
-            //newGameButton.IsEnabled = false;
-            window.TopGrid.Children.Add(newGameButton);
-            Grid.SetColumn(newGameButton, 3);
+            // Create worker to reveal mines
+            MineButton mb = null;
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += (sender, e) =>
+                {
+                    for (int i = 0; i < mineButtons.Count; i++)
+                    {
+                        if(mineButtons[i].tile.isMine && mineButtons[i].tile.isActive == false)
+                        {
+                            mb = mineButtons[i];
+                            Thread.Sleep(10);
+                            worker.ReportProgress(0);
+                        }
+                    }
+                };
+
+            worker.ProgressChanged += (sender, e) =>
+            {
+                if(mb.tile.isFlagged && mb.tile.isMine)
+                {
+                    mb.setFlag();
+                    mb.setTile();
+                }
+                mb.setTile();   
+            };
+
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                newGameButton.IsEnabled = true;
+            };
+
+            worker.RunWorkerAsync();
         }
 
         /// <summary>
         /// Create a worker thread to check surrounding tiles and reveal all empty tiles in a chain
         /// </summary>
         /// <param name="t"></param>
-        public void checkTiles(Tile t, bool doubleClick)
+        public void checkTiles(Tile t)
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = false;
-            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-            if (doubleClick)
+            worker.DoWork += (sender, e) =>
             {
-                worker.DoWork += (sender, e) =>
-                {
-                    update = checkQueue(checkNeighbors(t), new List<Tile>());
-                };
-            }
-            else
+                update = checkQueue(checkNeighbors(t), new List<Tile>());
+            };
+            
+            worker.RunWorkerCompleted += (sender, e) =>
             {
-                worker.DoWork += (sender, e) =>
-                {
-                    update = checkQueue(checkNeighbors(t), new List<Tile>());
-                };
-            }
+                setTiles(update);
+            };
             worker.RunWorkerAsync();
-        }
-
-        /// <summary>
-        /// Run upon CheckTiles worker completion to update GUI
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            setTiles(update);
-            update = new Queue<Tile>();
         }
 
         /// <summary>
@@ -186,13 +235,34 @@ namespace Ms
         /// <param name="queue"></param>
         public void setTiles(Queue<Tile> queue)
         {
-            while (queue.Count > 0)
+            for (int i = queue.Count; i >= 0; i--)
             {
                 Tile t = queue.Dequeue();
                 if (!t.isFlagged) {
                     mineButtons[t.index].setTile();
                 }
+                queue.Enqueue(t);
             }
+
+            bool endGame = false;
+            BackgroundWorker testForMines = new BackgroundWorker();
+            testForMines.WorkerReportsProgress = false;
+            testForMines.DoWork += (sender, e) =>
+            {
+                while (queue.Count > 0)
+                {
+                    Tile temp = queue.Dequeue();
+                    if (!temp.isFlagged && temp.isMine) { endGame = true; }
+                }
+            };
+
+            testForMines.RunWorkerCompleted += (sender, e) =>
+            {
+                if(endGame) { gameLost(); }
+            };
+
+            testForMines.RunWorkerAsync();
+
         }
         /// <summary>
         /// Check a queue of tiles for all adjacent empty tiles

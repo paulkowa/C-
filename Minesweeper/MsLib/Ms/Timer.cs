@@ -43,7 +43,7 @@ namespace Ms
             while (!CancellationPending)
             {
                 Thread.Sleep(1000);
-                if (!CancellationPending) ReportProgress(500);
+                if (!CancellationPending) ReportProgress(0);
             }
 
             e.Cancel = true;

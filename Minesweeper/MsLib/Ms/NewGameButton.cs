@@ -14,6 +14,7 @@ namespace Ms
     public class NewGameButton : Button
     {
         private Game game;
+        private Image smile, loss, win;
         public NewGameButton(Game game)
         {
             // Link to game class
@@ -31,11 +32,21 @@ namespace Ms
             Height = 40;
             Width = 40;
 
-            Image i = new Image();
-            i.Source = new BitmapImage(new Uri(@"/Resources/smile.png", UriKind.RelativeOrAbsolute));
+            smile = new Image();
+            smile.Source = new BitmapImage(new Uri(@"/Resources/smile.png", UriKind.RelativeOrAbsolute));
             VerticalAlignment = VerticalAlignment.Center;
             HorizontalAlignment = HorizontalAlignment.Center;
-            Content = i;
+            Content = smile;
+
+            win = new Image();
+            win.Source = new BitmapImage(new Uri(@"/Resources/victory.png", UriKind.RelativeOrAbsolute));
+            VerticalAlignment = VerticalAlignment.Center;
+            HorizontalAlignment = HorizontalAlignment.Center;
+
+            loss = new Image();
+            loss.Source = new BitmapImage(new Uri(@"/Resources/loss.png", UriKind.RelativeOrAbsolute));
+            VerticalAlignment = VerticalAlignment.Center;
+            HorizontalAlignment = HorizontalAlignment.Center;
         }
 
         /// <summary>
@@ -45,6 +56,7 @@ namespace Ms
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
+            Content = smile;
             if (!game.firstClick)
             {
                 game.newGame();
@@ -56,6 +68,16 @@ namespace Ms
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonUp(e);
+        }
+
+        public void gameLost()
+        {
+            Content = loss;
+        }
+
+        public void gameWon()
+        {
+            Content = win;
         }
     }
 }
