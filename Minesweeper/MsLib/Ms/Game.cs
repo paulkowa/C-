@@ -12,25 +12,26 @@ using System.Windows.Controls.Primitives;
 
 namespace Ms
 {
+    /// <summary>
+    /// Game handles the GUI operations and the general game controls such as starting a new game and ending the current game
+    /// </summary>
     public class Game
     {
         private List<MineButton> mineButtons;
         public MainWindow window { get; private set; }
         public Board board { get; private set; }
-        public bool firstClick { get; set; }
+        public bool firstClick, gameActive;
         private Queue<Tile> update;
         private const int size = 576;
-        private int seconds;
-        private BackgroundWorker time;
+        private Timer time;
+        //private NewGameButton newGameButton;
 
         public Game(MainWindow window)
         {
-            // Initalize variables
+            // Initalize variable
             this.window = window;
-            board = new Board(size);
-            mineButtons = new List<MineButton>();
-            update = new Queue<Tile>();
-            firstClick = true;
+            // Add new button GUI element
+            createNewGameButton(this);
             // Start game
             newGame();
         }
@@ -40,33 +41,55 @@ namespace Ms
         /// </summary>
         public void newGame()
         {
+            stopTimer();
+            clearTimer();
             clearBoard();
             fillBoard();
-            createNewGameButton(this);
             window.MineCounter.Text = Convert.ToString(board.mineTotal);
         }
 
-        //public void newGame()
-        //{
-        //    BackgroundWorker worker = new BackgroundWorker();
-        //    worker.WorkerReportsProgress = false;
-        //    worker.RunWorkerCompleted += NewGame_RunWorkerCompleted;
-        //    worker.DoWork += (sender, e) =>
-        //    {
-                
-        //    };
-        //    worker.RunWorkerAsync();
-        //}
+        /// <summary>
+        /// Creates an async thread to track the time and update the GUI
+        /// </summary>
+        public void startTimer()
+        {
+            firstClick = false;
+            time = new Timer(window);
+            time.RunWorkerAsync();
+        }
 
         /// <summary>
-        /// Run upon CheckTiles worker completion to update GUI
+        /// Cancel the time async thread
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NewGame_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        public void stopTimer()
         {
-            setTiles(update);
-            update = new Queue<Tile>();
+            if (gameActive)
+            {
+                gameActive = false;
+                time.CancelAsync();
+                time.Dispose();
+                time = null;
+                GC.Collect();
+            }
+        }
+
+        /// <summary>
+        /// Set the timer value to 0
+        /// </summary>
+        private void clearTimer()
+        {
+            window.Timer.Text = "0";
+        }
+
+        /// <summary>
+        /// Remove flags from every tile already flagged
+        /// </summary>
+        public void removeFlags()
+        {
+            foreach(MineButton mb in mineButtons)
+            {
+                if (mb.tile.isFlagged) { mb.setFlag(); }
+            }
         }
 
         /// <summary>
@@ -81,9 +104,13 @@ namespace Ms
                     window.UniGrid.Children.RemoveAt(i);
                 }
             }
+            update = new Queue<Tile>();
+            firstClick = true;
+            gameActive = true;
             board = new Board(size);
             mineButtons = new List<MineButton>();
         }
+
         /// <summary>
         /// Fills the UI with new buttons representing the tiles for the game
         /// </summary>
@@ -110,42 +137,10 @@ namespace Ms
         /// </summary>
         private void createNewGameButton(Game game)
         {
-            NewGameButton newGame = new NewGameButton(game);
-            window.TopGrid.Children.Add(newGame);
-            Grid.SetColumn(newGame, 3);
-        }
-
-        /// <summary>
-        /// Create and run a new async thread to update the timer
-        /// </summary>
-        public void startTimer()
-        {
-            firstClick = false;
-            time = new BackgroundWorker();
-            time.WorkerReportsProgress = true;
-            time.ProgressChanged += Time_ProgressChanged;
-            time.DoWork += (sender, e) =>
-            {
-                while (true)
-                {
-                    Thread.Sleep(1000);
-                    time.ReportProgress(500);
-                }
-            };
-            time.RunWorkerAsync(seconds);
-        }
-        public void stopTimer()
-        {
-            
-        }
-        /// <summary>
-        /// GUI call for ascyn thread to update the timer
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Time_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            window.Timer.Text = Convert.ToString(++seconds);
+            NewGameButton newGameButton = new NewGameButton(game);
+            //newGameButton.IsEnabled = false;
+            window.TopGrid.Children.Add(newGameButton);
+            Grid.SetColumn(newGameButton, 3);
         }
 
         /// <summary>

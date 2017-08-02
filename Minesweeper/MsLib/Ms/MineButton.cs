@@ -43,24 +43,8 @@ namespace Ms
         protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseRightButtonDown(e);
-            // Remove flag
-            if (tile.isFlagged)
-            {
-                Content = null;
-                Background = Brushes.LightGray;
-                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) + 1);
-                tile.isFlagged = false;
-            }
-            // Ignore if tile is already activated
-            else if (tile.isActive) { return; }
-            // Set flag
-            else
-            {
-                Content = flag;
-                Background = Brushes.Blue;
-                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) - 1);
-                tile.isFlagged = true;
-            }
+            setFlag();
+            
         }
         protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
         {
@@ -93,6 +77,26 @@ namespace Ms
             if (e.ChangedButton == MouseButton.Left && tile.isActive) { game.checkTiles(tile, true); }
         }
 
+        public void setFlag()
+        {
+            if (tile.isFlagged)
+            {
+                Content = null;
+                Background = Brushes.LightGray;
+                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) + 1);
+                tile.isFlagged = false;
+            }
+            // Ignore if tile is already activated
+            else if (tile.isActive) { return; }
+            // Set flag
+            else
+            {
+                Content = flag;
+                Background = Brushes.Blue;
+                game.window.MineCounter.Text = Convert.ToString(Convert.ToInt32(game.window.MineCounter.Text) - 1);
+                tile.isFlagged = true;
+            }
+        }
         /// <summary>
         /// Set the button to display the proper number or mine
         /// </summary>

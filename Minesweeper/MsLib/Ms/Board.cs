@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Ms
 {
+    /// <summary>
+    /// Class to represent the board and handle filling it with tiles, assigning tile mine count values, generating mines and relocating mines
+    /// </summary>
     public class Board
     {
         private int size;
@@ -71,23 +74,13 @@ namespace Ms
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = false;
-            //worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.DoWork += (sender, e) =>
             {
                 mineCount(board, size);
             };
             worker.RunWorkerAsync();
-        }
+        }            
 
-        /// <summary>
-        /// Run upon CheckTiles worker completion to update GUI
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        //{
-            
-        //}
         /// <summary>
         /// Assign tiles with their correct nearby mine values
         /// </summary>

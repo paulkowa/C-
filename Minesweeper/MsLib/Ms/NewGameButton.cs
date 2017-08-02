@@ -36,18 +36,26 @@ namespace Ms
             VerticalAlignment = VerticalAlignment.Center;
             HorizontalAlignment = HorizontalAlignment.Center;
             Content = i;
-
         }
 
+        /// <summary>
+        /// Start a new game on left mouse click, if at least one tile has already been selected
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            //game.newGame();
-
+            if (!game.firstClick)
+            {
+                game.newGame();
+                IsEnabled = false;
+            }
+            else { game.removeFlags(); }
+            IsEnabled = true;
         }
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            base.OnMouseRightButtonUp(e);
+            base.OnMouseLeftButtonUp(e);
         }
     }
 }

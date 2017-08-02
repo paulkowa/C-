@@ -14,6 +14,10 @@ namespace Ms
         public int nearbyMines { get; set; }
         public int index { get; private set; }
 
+        /// <summary>
+        /// Container to hold all the information that a tile in the board needs
+        /// </summary>
+        /// <param name="index"></param>
         public Tile(int index)
         {
             isActive = false;
