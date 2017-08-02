@@ -90,6 +90,7 @@ namespace Ms
         {
             for (int i = 0; i < board.Count; i++)
             {
+                if(board[i].isMine) { board[i].nearbyMines = -1; }
                 if (i == 0 || i == 23 || i == 552 || i == 575)
                 {
                     switch (i)
