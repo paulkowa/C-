@@ -1,8 +1,5 @@
 Need to be implemented
--creating game won condition
--create game lost condition
--restructure code for visability
--implement difficulty options
+-difficulty options
 -dynamically create board and mine amount based on difficultly
 -create a logfile for record times
 -Create a more solvable way of generating mine locations on the board to minimize guessing
