@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AddressBook
 {
-    public class Address : aAddress
+    interface IGooey
     {
     }
 }
